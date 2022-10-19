@@ -25,7 +25,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         String createTable = """
-                CREATE TABLE `users`.`users` (
+                CREATE TABLE IF NOT EXISTS `users`.`users` (
                   `userId` INT NOT NULL AUTO_INCREMENT,
                   `name` VARCHAR(45) NOT NULL,
                   `last_name` VARCHAR(45) NOT NULL,
@@ -44,7 +44,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         try {
-            statement.executeUpdate("DROP TABLE users");
+            statement.executeUpdate("DROP TABLE IF EXISTS users");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -75,7 +75,8 @@ public class UserDaoJDBCImpl implements UserDao {
     public List<User> getAllUsers() {
         List<User> list = new ArrayList<>();
         try {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM users");
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("userId"));
